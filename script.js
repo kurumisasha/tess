@@ -20,3 +20,25 @@ function generateVouchers(cardNumber, quantity, voucherCodesList) {
 
     fetch(url, { method: 'POST', headers: headers, body: body })
         .then(response => {
+ if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.voucherCodes && Array.isArray(data.voucherCodes)) {
+                data.voucherCodes.forEach(code => {
+                    const listItem = document.createElement('li');
+                    listItem.innerText = code;
+                    voucherCodesList.appendChild(listItem);
+                });
+                document.getElementById('voucher-result').classList.remove('hidden');
+            } else {
+                throw new Error('Voucher codes not found in response');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to generate vouchers. Please try again.');
+        });
+}
